@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { RefreshIcon } from "@heroicons/react/outline";
 
@@ -18,20 +18,17 @@ export default function Profile() {
   const [activeAvatar, setActiveAvatar] = useState(
     currentUser?.photoURL || ""
   );
-  const [customAvatarUrl, setCustomAvatarUrl] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const loadFreshAvatars = () => {
-    const res = generateAvatar();
-    setAvatars(res);
-    if (!activeAvatar) {
-      setActiveAvatar(res[0]);
-    }
-  };
+ const loadFreshAvatars = useCallback(() => {
+  const res = generateAvatar();
+  setAvatars(res);
+  if (!activeAvatar) {
+    setActiveAvatar(res[0]);
+  }
+}, [activeAvatar]);
 
   useEffect(() => {
     loadFreshAvatars();
-  }, []);
+  }, [loadFreshAvatars]);
 
   const handleSelectAvatar = (url) => {
     setActiveAvatar(url);
