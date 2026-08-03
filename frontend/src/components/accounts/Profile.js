@@ -18,13 +18,16 @@ export default function Profile() {
   const [activeAvatar, setActiveAvatar] = useState(
     currentUser?.photoURL || ""
   );
- const loadFreshAvatars = useCallback(() => {
-  const res = generateAvatar();
-  setAvatars(res);
-  if (!activeAvatar) {
-    setActiveAvatar(res[0]);
-  }
-}, [activeAvatar]);
+  const [customAvatarUrl, setCustomAvatarUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const loadFreshAvatars = useCallback(() => {
+    const res = generateAvatar();
+    setAvatars(res);
+    if (!activeAvatar) {
+      setActiveAvatar(res[0]);
+    }
+  }, [activeAvatar]);
 
   useEffect(() => {
     loadFreshAvatars();
@@ -54,10 +57,13 @@ export default function Profile() {
     try {
       setError("");
       setLoading(true);
+
       const profile = {
-        displayName: username || currentUser?.email?.split("@")[0] || "User",
+        displayName:
+          username || currentUser?.email?.split("@")[0] || "User",
         photoURL: finalPhotoURL,
       };
+
       await updateUserProfile(currentUser, profile);
       navigate("/");
     } catch (err) {
@@ -91,7 +97,9 @@ export default function Profile() {
               className="w-28 h-28 rounded-full object-cover border-4 border-blue-600 shadow-md bg-gray-100 dark:bg-gray-700"
             />
           </div>
-          <span className="text-xs text-gray-400 mt-2">Active Preview</span>
+          <span className="text-xs text-gray-400 mt-2">
+            Active Preview
+          </span>
         </div>
 
         <form className="space-y-6" onSubmit={handleFormSubmit}>
@@ -101,6 +109,7 @@ export default function Profile() {
               <label className="block text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300">
                 Preset Avatars
               </label>
+
               <button
                 type="button"
                 onClick={loadFreshAvatars}
@@ -124,16 +133,16 @@ export default function Profile() {
                   )}
                 >
                   <img
+                    src={avatarUrl}
                     alt={`Avatar option ${index + 1}`}
                     className="w-20 h-20 rounded-full object-cover"
-                    src={avatarUrl}
                   />
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Or Custom Avatar URL */}
+          {/* Custom Avatar URL */}
           <div>
             <label
               htmlFor="customAvatar"
@@ -141,18 +150,19 @@ export default function Profile() {
             >
               Or Custom Image URL
             </label>
+
             <input
               id="customAvatar"
               name="customAvatar"
               type="url"
-              className="appearance-none rounded-lg block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="https://example.com/photo.jpg"
               value={customAvatarUrl}
               onChange={handleCustomUrlChange}
+              placeholder="https://example.com/photo.jpg"
+              className="appearance-none rounded-lg block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          {/* Display Name Input */}
+          {/* Display Name */}
           <div>
             <label
               htmlFor="username"
@@ -160,15 +170,16 @@ export default function Profile() {
             >
               Display Name
             </label>
+
             <input
               id="username"
               name="username"
               type="text"
               required
-              className="appearance-none rounded-lg block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter your display name"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter your display name"
+              className="appearance-none rounded-lg block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -186,5 +197,3 @@ export default function Profile() {
     </div>
   );
 }
-
-
